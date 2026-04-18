@@ -1,5 +1,5 @@
 // export const BASEAPI = 'http://localhost:3001/api/v1/algocrush'
-export const BASEAPI ='https://algocrush-node.onrender.com'
+export const BASEAPI ='https://algocrush-node.onrender.com/api/v1/algocrush'
 
 
 // Onboarding module 
