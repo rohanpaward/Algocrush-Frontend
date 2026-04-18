@@ -58,14 +58,21 @@ export const ReviewStep = ({ setStep }) => {
 
     const handleRegister = async () => {
       try {
+        const token = localStorage.getItem("token");
+        
         const res = await axios.post(
           `${REGISTER_USER}`,
-          data
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
         );
     
-        console.log(" Success:", res.data);
+        console.log("Success:", res.data);
       } catch (err) {
-        console.error(" Error:", err.response?.data || err.message);
+        console.error("Error:", err.response?.data || err.message);
       }
     };
 
