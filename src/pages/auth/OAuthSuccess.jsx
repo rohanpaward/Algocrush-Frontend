@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../../services/auth/auth-services";
 
-
 const OAuthSuccess = () => {
   const navigate = useNavigate();
   const hasRun = useRef(false);
@@ -13,9 +12,16 @@ const OAuthSuccess = () => {
 
     const init = async () => {
       try {
-        const data = await getMe();
+        // Get token from URL
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
 
-        console.log(data,'this is data')
+        if (token) {
+          localStorage.setItem("token", token);
+        }
+
+        const data = await getMe();
+        console.log(data, 'this is data');
 
         if (data?.isNewUser === true) {
           navigate("/onboarding");
@@ -23,7 +29,7 @@ const OAuthSuccess = () => {
           navigate("/profile");
         }
       } catch (e) {
-        navigate("/login");
+        navigate("/");
       }
     };
 
