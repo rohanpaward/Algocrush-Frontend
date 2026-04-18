@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../../services/auth/auth-services";
 
-
 const OAuthSuccess = () => {
   const navigate = useNavigate();
   const hasRun = useRef(false);
@@ -13,6 +12,18 @@ const OAuthSuccess = () => {
 
     const init = async () => {
       try {
+        // ✅ Get token from URL and save to localStorage
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
+
+        console.log(params,'this is params')
+        console.log(token,'this is the token')
+
+        if (token) {
+          localStorage.setItem("token", token);
+          window.history.replaceState({}, document.title, "/oauth-success");
+        }
+
         const data = await getMe();
 
         if (data?.isNewUser === true) {
@@ -21,7 +32,7 @@ const OAuthSuccess = () => {
           navigate("/profile");
         }
       } catch (e) {
-        navigate("/login");
+        navigate("/");
       }
     };
 
