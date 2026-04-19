@@ -1,6 +1,6 @@
 // src/slice/onboarding-slice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getLookingFor, getRoles } from "../services/onboarding/onboarding-service";
+import { domains, getLookingFor, getRoles } from "../services/onboarding/onboarding-service";
 
 // ✅ thunk
 export const fetchRoles = createAsyncThunk(
@@ -19,6 +19,12 @@ export const fetchLookingFor = createAsyncThunk(
   }
 );
 
+export const fetchDomains = createAsyncThunk("onboarding/fetchdomain",
+  async () =>{
+    const res = await domains()
+    return res.data
+  }
+)
 
 const initialState = {
   formData: {
@@ -35,6 +41,7 @@ const initialState = {
   },
   roles: [],       // ✅ add this
   lookingForOptions:[],
+  domains: [],   // ✅ add this
   loading: false,  // ✅ add this
   error: null,     // ✅ add this
 };
@@ -72,15 +79,28 @@ const onboardingSlice = createSlice({
         state.error = action.error.message;
       })
   
-      // ✅ lookingFor
+      // lookingFor
       .addCase(fetchLookingFor.pending, (state) => {
         state.loading = true;
       })
       .addCase(fetchLookingFor.fulfilled, (state, action) => {
         state.loading = false;
-        state.lookingForOptions = action.payload; // 🔥 HERE is your response
+        state.lookingForOptions = action.payload;
       })
       .addCase(fetchLookingFor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+  
+      // ✅ domains
+      .addCase(fetchDomains.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchDomains.fulfilled, (state, action) => {
+        state.loading = false;
+        state.domains = action.payload;
+      })
+      .addCase(fetchDomains.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

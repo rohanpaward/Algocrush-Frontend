@@ -3,7 +3,7 @@ import { StepWrapper } from "../../../Components/StepWrapper";
 import { useEffect, useRef, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { updateForm } from "../../../slice/onboarding-slice";
+import { fetchDomains, updateForm } from "../../../slice/onboarding-slice";
 
 import api from "../../../api/axiosInstance";
 import { GET_DOMAINS, GET_SKILLS_BY_DOMAIN } from "../../../constants";
@@ -14,7 +14,8 @@ export const SkillsStep = () => {
   const dispatch = useDispatch();
   const data = useSelector((state) => state.onboarding.formData);
 
-  const [domains, setDomains] = useState([]);
+  // const [domains, setDomains] = useState([]);
+  const domains = useSelector((state) => state.onboarding.domains);
   const [skills, setSkills] = useState([]);
 
   const [domainOpen, setDomainOpen] = useState(false);
@@ -26,18 +27,8 @@ export const SkillsStep = () => {
   const domainRef = useRef(null);
   const skillRef = useRef(null);
 
-  // ================= FETCH DOMAINS =================
   useEffect(() => {
-    const fetchDomains = async () => {
-      try {
-        const res = await api.get(GET_DOMAINS);
-        console.log(res,'this is res')
-        setDomains(res.data || []);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchDomains();
+    dispatch(fetchDomains()); // goes to Redux
   }, []);
 
   // ================= FETCH SKILLS =================

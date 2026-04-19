@@ -40,7 +40,6 @@ export const IntentStep = () => {
     const fetchIntents = async () => {
       try {
         const res = await api.get(GET_LOOKING_FOR);
-        console.log(res,'from fetch intent')
         setIntents(res?.data || []);
       } catch (err) {
         console.error("Error fetching intents:", err);

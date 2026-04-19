@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   ShieldCheck,
@@ -12,29 +12,30 @@ import axios from "axios";
 import { REGISTER_USER } from "../../../constants";
 
 // Domain + Intent mapping (since Redux stores IDs)
-const DOMAIN_MAP = {
-  1: "Engineering",
-  2: "Cloud",
-  3: "Security",
-  4: "AI",
-  5: "Web",
-};
 
 const INTENT_MAP = {
   1: "Co-Founder",
   2: "Side Project",
   3: "Freelance",
-  4: "Full Time",
-  5: "Internship",
-  6: "Learning",
-  7: "Open Source",
-  8: "Hackathons",
-  9: "Networking",
+  4: "Learning",
+  5: "Open Source",
+  6: "Hackathons",
+  7: "Networking",
 };
 
 export const ReviewStep = ({ setStep }) => {
   // Get Redux data
   const data = useSelector((state) => state.onboarding.formData);
+  const domainList = useSelector((state) => state.onboarding.domains);
+
+  const DOMAIN_MAP = useMemo(() => {
+    return domainList.reduce((acc, domain) => {
+      acc[domain.id] = domain.name;
+      return acc;
+    }, {});
+  }, [domainList]);
+  
+  console.log(DOMAIN_MAP,'this is the domain map')
 
   // Basic info
   const name = data.name || "Alex Chen";
@@ -47,9 +48,10 @@ export const ReviewStep = ({ setStep }) => {
     data.projectDesc || "Matching serious builders fast.";
 
   //  Domains (IDs → names, max 3)
-  const domains =
-    data.domainIds?.map((id) => DOMAIN_MAP[id])?.filter(Boolean) ||
-    [];
+  const selectedDomains =
+  data.domainIds?.map((id) => DOMAIN_MAP[id])?.filter(Boolean) || [];
+
+  console.log(selectedDomains,'this is the selected domain')
 
   //  Intent
   const intent =
@@ -106,8 +108,8 @@ export const ReviewStep = ({ setStep }) => {
 
           {/* Domains */}
           <div className="flex gap-2 mb-8 flex-wrap">
-            {domains.length ? (
-              domains.slice(0, 3).map((domain) => (
+            {selectedDomains.length ? (
+              selectedDomains.slice(0, 3).map((domain) => (
                 <span
                   key={domain}
                   className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] text-slate-400 uppercase"
@@ -163,7 +165,7 @@ export const ReviewStep = ({ setStep }) => {
         </button>
 
         <button onClick= { handleRegister }className="h-16 px-10 rounded-full bg-white text-black font-bold flex items-center gap-3">
-          FORGE IDENTITY <Rocket size={20} />
+          Enter Algocrush <Rocket size={20} />
         </button>
 
         <button className="w-14 h-14 rounded-full bg-[#0A0A0F] border border-white/5 flex items-center justify-center text-slate-500 hover:text-white">
