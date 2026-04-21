@@ -15,3 +15,6 @@ export const domains = async()=>{
 export const getLookingFor = async()=>{
   return await api.apply(GET_LOOKING_FOR)
 }
+export const getBuildTypes = async()=>{
+  return await api.apply(GET_LOOKING_FOR)
+}

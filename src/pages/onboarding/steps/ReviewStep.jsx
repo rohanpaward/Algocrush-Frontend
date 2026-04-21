@@ -35,7 +35,6 @@ export const ReviewStep = ({ setStep }) => {
     }, {});
   }, [domainList]);
   
-  console.log(DOMAIN_MAP,'this is the domain map')
 
   // Basic info
   const name = data.name || "Alex Chen";
@@ -51,7 +50,6 @@ export const ReviewStep = ({ setStep }) => {
   const selectedDomains =
   data.domainIds?.map((id) => DOMAIN_MAP[id])?.filter(Boolean) || [];
 
-  console.log(selectedDomains,'this is the selected domain')
 
   //  Intent
   const intent =

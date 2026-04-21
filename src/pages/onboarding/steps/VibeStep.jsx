@@ -1,11 +1,42 @@
 import { useDispatch, useSelector } from "react-redux";
 import { StepWrapper } from "../../../Components/StepWrapper";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { updateForm } from "../../../slice/onboarding-slice";
+import * as yup from "yup";
 
-export const VibeStep = () => {
+
+
+const schema = yup.object({
+  vibeAnswer: yup
+    .string()
+    .trim()
+    .min(5, "Too short")
+    .required(),
+});
+
+export const VibeStep = ({setStepValid}) => {
   const dispatch = useDispatch();
   const data = useSelector((state) => state.onboarding.formData);
+
+  const [isValid, setIsValid] = useState(false);
+
+
+  useEffect(() => {
+    const validate = async () => {
+      try {
+        await schema.validate(data);
+        setIsValid(true);
+      } catch {
+        setIsValid(false);
+      }
+    };
+  
+    validate();
+  }, [data]);
+
+  useEffect(() => {
+    setStepValid(isValid);
+  }, [isValid]);
 
   const handleChange = (e) => {
     const value = e.target.value.slice(0, 50);
@@ -16,7 +47,6 @@ export const VibeStep = () => {
       })
     );
   };
-
   return (
     <StepWrapper
       title="Your Vibe"

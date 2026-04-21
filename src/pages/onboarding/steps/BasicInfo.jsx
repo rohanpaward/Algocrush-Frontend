@@ -5,20 +5,28 @@ import { Input } from "../../../Components/Input";
 import { SelectCard } from "../../../Components/SelectCard";
 import { Pill } from "../../../Components/Pill";
 import { getRoles } from "../../../services/onboarding/onboarding-service";
+import * as yup from "yup";
 
 // 🔥 REDUX
 import { useDispatch, useSelector } from "react-redux";
 import { updateForm } from "../../../slice/onboarding-slice";
 
-const BUILDER_TYPES = [
-  "Hobbyist",
-  "Indie Hacker",
-  "Freelancer",
-  "Student",
-  "Professional",
+const COLLAB_OPTIONS = [
+  { label: "Actively looking", value: "active" },
+  { label: "Open if interesting", value: "selective" },
+  { label: "Not right now", value: "closed" },
 ];
 
-// 🔥 Mapping API roles → Primary UI roles
+const STUDY_YEAR_OPTIONS = [
+  { label: "1st Year", value: "year_1" },
+  { label: "2nd Year", value: "year_2" },
+  { label: "3rd Year", value: "year_3" },
+  { label: "4th Year+", value: "year_4_plus" },
+  { label: "Postgrad", value: "postgrad" },
+  { label: "Graduate", value: "graduate" },
+  { label: "Other", value: "other" },
+];
+
 const PRIMARY_ROLE_MAP = {
   "Frontend Developer": { id: "frontend", icon: MonitorPlay },
   "Backend Developer": { id: "backend", icon: Database },
@@ -26,20 +34,30 @@ const PRIMARY_ROLE_MAP = {
   "AI Engineer": { id: "ai", icon: Cpu },
 };
 
-export const BasicInfoStep = () => {
-  const dispatch = useDispatch();
+const schema = yup.object({
+  name: yup.string().required(),
+  CollegeName: yup.string().required(),
+  studyYear: yup.string().required(),
+  roleId: yup.string().required(),
+  collabStatus: yup.string().required(),
+});
 
-  // 🔥 Get data from Redux (single source of truth)
+export const BasicInfoStep = ({ setStepValid }) => {
+  const dispatch = useDispatch();
   const data = useSelector((state) => state.onboarding.formData);
 
   const fileInputRef = useRef(null);
   const dropdownRef = useRef(null);
+  const yearRef = useRef(null);
 
   const [roles, setRoles] = useState([]);
   const [search, setSearch] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [yearOpen, setYearOpen] = useState(false);
 
-  // ✅ Fetch roles (simple way without thunk)
+  const [isValid, setIsValid] = useState(false);
+
+  // ✅ Fetch roles
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -49,15 +67,17 @@ export const BasicInfoStep = () => {
         console.error("Error fetching roles:", err);
       }
     };
-
     fetchRoles();
   }, []);
 
-  // ✅ Close dropdown when clicked outside
+  // ✅ Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsDropdownOpen(false);
+      }
+      if (yearRef.current && !yearRef.current.contains(e.target)) {
+        setYearOpen(false);
       }
     };
 
@@ -65,7 +85,6 @@ export const BasicInfoStep = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ✅ Split roles → primary + others
   const primaryRoles = roles
     .filter((r) => PRIMARY_ROLE_MAP[r.name])
     .map((r) => ({
@@ -77,25 +96,39 @@ export const BasicInfoStep = () => {
 
   const otherRoles = roles.filter((r) => !PRIMARY_ROLE_MAP[r.name]);
 
-  // ✅ Search filter
   const filteredRoles = otherRoles.filter((r) =>
     r.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // ✅ Avatar upload → store in Redux
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
-
-      dispatch(
-        updateForm({
-          avatar: url,
-        })
-      );
+      dispatch(updateForm({ avatar: url }));
     }
   };
 
+  const selectedYear = STUDY_YEAR_OPTIONS.find(
+    (y) => y.value === data.studyYear
+  )?.label;
+
+  // 🔥 VALIDATION LOGIC (simple + fast)
+  useEffect(() => {
+    const validate = async () => {
+      try {
+        await schema.validate(data);
+        setIsValid(true);
+      } catch {
+        setIsValid(false);
+      }
+    };
+  
+    validate();
+  }, [data]);
+
+  useEffect(() => {
+    setStepValid(isValid);
+  }, [isValid]);
 
   return (
     <StepWrapper
@@ -103,18 +136,15 @@ export const BasicInfoStep = () => {
       subtitle="Set up your basic profile information."
     >
       <div className="flex flex-col gap-8">
-        {/* Avatar Upload */}
+
+        {/* Avatar */}
         <div className="flex items-center gap-6">
           <div
-            className="w-24 h-24 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center bg-[#12121A] relative overflow-hidden group cursor-pointer hover:border-purple-500"
+            className="w-24 h-24 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center bg-[#12121A] relative overflow-hidden cursor-pointer hover:border-purple-500"
             onClick={() => fileInputRef.current?.click()}
           >
             {data.avatar ? (
-              <img
-                src={data.avatar}
-                alt="Avatar"
-                className="w-full h-full object-cover"
-              />
+              <img src={data.avatar} className="w-full h-full object-cover" />
             ) : (
               <Upload className="text-slate-500" />
             )}
@@ -131,19 +161,59 @@ export const BasicInfoStep = () => {
 
         {/* Name */}
         <Input
-          label="Display Name"
-          placeholder="e.g. John Doe"
+          label="Display Name *"
+          placeholder="Enter Your Name"
           value={data.name}
           onChange={(e) =>
             dispatch(updateForm({ name: e.target.value }))
           }
         />
 
+        {/* College */}
+        <Input
+          label="College Name *"
+          placeholder="Enter Your College Name"
+          value={data.CollegeName}
+          onChange={(e) =>
+            dispatch(updateForm({ CollegeName: e.target.value }))
+          }
+        />
+
+        {/* YEAR */}
+        <div className="relative" ref={yearRef}>
+          <div onClick={() => setYearOpen((prev) => !prev)}>
+            <Input
+              label="Enter Year *"
+              placeholder="What Year Are You Studying In"
+              value={selectedYear || ""}
+              readOnly
+            />
+          </div>
+
+          {yearOpen && (
+            <div className="absolute z-10 w-full mt-2 border border-slate-800 rounded-lg bg-[#12121A]">
+              <div className="max-h-40 overflow-y-auto">
+                {STUDY_YEAR_OPTIONS.map((opt) => (
+                  <div
+                    key={opt.value}
+                    className="px-4 py-2 hover:bg-slate-800 cursor-pointer"
+                    onClick={() => {
+                      dispatch(updateForm({ studyYear: opt.value }));
+                      setYearOpen(false);
+                    }}
+                  >
+                    {opt.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Roles */}
         <div className="flex flex-col gap-3">
-          <label className="text-sm text-slate-300">Primary Role</label>
+          <label className="text-sm text-slate-300">Primary Role *</label>
 
-          {/* Primary Roles */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {primaryRoles.map((role) => (
               <SelectCard
@@ -165,7 +235,6 @@ export const BasicInfoStep = () => {
 
           {/* Dropdown */}
           <div ref={dropdownRef} className="relative mt-3">
-            {/* Trigger */}
             <div
               className="px-4 py-3 border border-slate-800 rounded-lg cursor-pointer"
               onClick={() => setIsDropdownOpen((prev) => !prev)}
@@ -173,7 +242,6 @@ export const BasicInfoStep = () => {
               {data.roleName || "Select other role..."}
             </div>
 
-            {/* Dropdown Content */}
             {isDropdownOpen && (
               <div className="absolute w-full mt-2 border border-slate-800 rounded-lg bg-[#12121A]">
                 <input
@@ -206,26 +274,27 @@ export const BasicInfoStep = () => {
           </div>
         </div>
 
-        {/* Builder Type */}
+        {/* Collab */}
         <div className="flex flex-col gap-3">
           <label className="text-sm text-slate-300">
-            What kind of builder are you?
+            Are you open to collaborating right now? 
           </label>
 
           <div className="flex gap-2 flex-wrap">
-            {BUILDER_TYPES.map((type) => (
+            {COLLAB_OPTIONS.map((opt) => (
               <Pill
-                key={type}
-                active={data.builderType === type}
+                key={opt.value}
+                active={data.collabStatus === opt.value}
                 onClick={() =>
-                  dispatch(updateForm({ builderType: type }))
+                  dispatch(updateForm({ collabStatus: opt.value }))
                 }
               >
-                {type}
+                {opt.label}
               </Pill>
             ))}
           </div>
         </div>
+
       </div>
     </StepWrapper>
   );

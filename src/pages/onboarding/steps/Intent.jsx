@@ -11,6 +11,8 @@ import { updateForm } from "../../../slice/onboarding-slice";
 // API
 import api from "../../../api/axiosInstance";
 import { GET_LOOKING_FOR } from "../../../constants";
+import * as yup from "yup";
+
 
 const TIMELINES = [
   "Just exploring",
@@ -27,11 +29,35 @@ const ICON_MAP = {
   users: Zap,
 };
 
-export const IntentStep = () => {
+const schema = yup.object({
+  lookingfor: yup.number().required(),
+ 
+});
+
+export const IntentStep = ({ setStepValid }) => {
   const dispatch = useDispatch();
   const data = useSelector((state) => state.onboarding.formData);
 
   const [intents, setIntents] = useState([]);
+  const [isValid, setIsValid] = useState(false);
+
+
+  useEffect(() => {
+    const validate = async () => {
+      try {
+        await schema.validate(data);
+        setIsValid(true);
+      } catch {
+        setIsValid(false);
+      }
+    };
+  
+    validate();
+  }, [data]);
+
+  useEffect(() => {
+    setStepValid(isValid);
+  }, [isValid]);
 
   // =========================
   // FETCH INTENTS API
@@ -72,7 +98,7 @@ export const IntentStep = () => {
               <SelectCard
                 key={intent.id}
                 title={formatName(intent.name)}
-                desc={`Looking for ${formatName(intent.name)}`}
+                desc={intent.description}
                 icon={Icon}
                 active={data.lookingfor === intent.id}                
                 onClick={() =>

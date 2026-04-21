@@ -1,13 +1,13 @@
 // src/slice/onboarding-slice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { domains, getLookingFor, getRoles } from "../services/onboarding/onboarding-service";
+import { domains, getBuildTypes, getLookingFor, getRoles } from "../services/onboarding/onboarding-service";
 
 // ✅ thunk
 export const fetchRoles = createAsyncThunk(
   "onboarding/fetchRoles",
   async () => {
     const res = await getRoles();
-    return res.data; // 🔥 important (your API returns { data: [] })
+    return res.data; 
   }
 );
 
@@ -15,7 +15,7 @@ export const fetchLookingFor = createAsyncThunk(
   "onboarding/fetchLookingFor",
   async () => {
     const res = await getLookingFor();
-    return res.data; // 🔥 important (your API returns { data: [] })
+    return res.data; 
   }
 );
 
@@ -26,24 +26,41 @@ export const fetchDomains = createAsyncThunk("onboarding/fetchdomain",
   }
 )
 
+export const fetchBuildTypes = createAsyncThunk(
+  "onboarding/fetchBuildTypes",
+  async () => {
+    const res = await getBuildTypes();
+    return res.data; // 🔥 important (your API returns { data: [] })
+  }
+);
+
+
 const initialState = {
   formData: {
     name: "",
+    CollegeName:"",
+    studyYear:"",
+    collabStatus:"",
     avatar: "",
     roleId: null,
     roleName: "",
-    builderType: "",
+    buildTypeIds: [],
+    projectGithubUrl:"",
+    ProjectLiveUrl:"",
     projectName: "",
-    projectDesc: "",
+    projectProblem:"",
+    projectChallenge: "",
+    projectSolution:"",
+    currentBuild:"",
     githubUrl: "",
     lookingfor:null,
     vibeAnswer:"",
   },
-  roles: [],       // ✅ add this
+  roles: [],       
   lookingForOptions:[],
-  domains: [],   // ✅ add this
-  loading: false,  // ✅ add this
-  error: null,     // ✅ add this
+  domains: [],   
+  loading: false,  
+  error: null,     
 };
 
 const onboardingSlice = createSlice({
@@ -92,15 +109,15 @@ const onboardingSlice = createSlice({
         state.error = action.error.message;
       })
   
-      // ✅ domains
-      .addCase(fetchDomains.pending, (state) => {
+      // ✅ build types
+      .addCase(fetchBuildTypes.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchDomains.fulfilled, (state, action) => {
+      .addCase(fetchBuildTypes.fulfilled, (state, action) => {
         state.loading = false;
-        state.domains = action.payload;
+        state.buildtypesoption = action.payload;
       })
-      .addCase(fetchDomains.rejected, (state, action) => {
+      .addCase(fetchBuildTypes.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });
