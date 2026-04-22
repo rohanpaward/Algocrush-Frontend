@@ -10,6 +10,7 @@ import {
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { REGISTER_USER } from "../../../constants";
+import { useNavigate } from "react-router-dom"; 
 
 // Domain + Intent mapping (since Redux stores IDs)
 
@@ -24,6 +25,12 @@ const INTENT_MAP = {
 };
 
 export const ReviewStep = ({ setStep }) => {
+
+
+  const navigate = useNavigate();
+
+
+
   // Get Redux data
   const data = useSelector((state) => state.onboarding.formData);
   const domainList = useSelector((state) => state.onboarding.domains);
@@ -59,9 +66,9 @@ export const ReviewStep = ({ setStep }) => {
     const handleRegister = async () => {
       try {
         const token = localStorage.getItem("token");
-        
+    
         const res = await axios.post(
-          `${REGISTER_USER}`,
+          REGISTER_USER,
           data,
           {
             headers: {
@@ -71,6 +78,21 @@ export const ReviewStep = ({ setStep }) => {
         );
     
         console.log("Success:", res.data);
+    
+        if (res?.data?.statusCode === 200) {
+          const user = res.data.user;
+    
+          // ✅ IMPORTANT: update state instead of waiting for /me
+          // If using Redux:
+          // dispatch(setUser(user));
+    
+          // If local state:
+          // setUser(user); (needs lifting)
+    
+          navigate("/profile"); //  no delay needed
+          window.location.reload();
+        }
+    
       } catch (err) {
         console.error("Error:", err.response?.data || err.message);
       }

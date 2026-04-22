@@ -2,7 +2,7 @@ import { ChevronRight } from "lucide-react";
 
 export const StepActions = ({ currentStep, setStep, isNextDisabled }) => (
   <div className="fixed bottom-0 left-0 right-0 md:left-64 p-6 bg-[#0B0A10]/80 backdrop-blur-md border-t border-slate-800/50 flex justify-end gap-4 z-10">
-    
+
     {currentStep > 1 && (
       <button
         onClick={() => setStep(prev => prev - 1)}
@@ -15,7 +15,7 @@ export const StepActions = ({ currentStep, setStep, isNextDisabled }) => (
     {currentStep < 6 && (
       <button
         onClick={() => {
-          if (isNextDisabled) return; // 🔥 safety
+          if (isNextDisabled) return; //safety
           setStep(prev => prev + 1);
         }}
         disabled={isNextDisabled}

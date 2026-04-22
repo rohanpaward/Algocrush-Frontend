@@ -6,21 +6,24 @@ import AlgoCrush from "./pages/Landing/AlgoCrushLandingPage";
 import Home from "./pages/Home/Home";
 import ProtectedLayout from "./Components/ProtectedLayout";
 import Onboarding from "./pages/onboarding/Onboarding";
-import Profile from "./pages/profile/profile";
+import { ProfileDashboard } from "./pages/profile/ProfileDashboard";
+import { EditProfile } from "./pages/profile/EditProfile";
 
 
 function App() {
+
   return (
     <Routes>
-    {/* ✅ PUBLIC */}
+    {/*PUBLIC */}
     <Route path="/" element={<AlgoCrush />} />
     <Route path="/oauth-success" element={<OAuthSuccess />} />
 
-    {/* 🔒 PROTECTED GROUP */}
+    {/*PROTECTED GROUP */}
     <Route element={<ProtectedLayout />}>
       <Route path="/home" element={<Home />} />
       <Route path="/onboarding" element={<Onboarding />} />
-      <Route path="/profile" element={ <Profile/>} />
+      <Route path="/profile" element={ <ProfileDashboard/>} />
+      <Route path='/profile/edit' element={<EditProfile/>}/>
     </Route>
   </Routes>
   );

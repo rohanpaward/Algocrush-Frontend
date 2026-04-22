@@ -14,13 +14,6 @@ import { GET_LOOKING_FOR } from "../../../constants";
 import * as yup from "yup";
 
 
-const TIMELINES = [
-  "Just exploring",
-  "Next few weeks",
-  "Next few months",
-  "ASAP",
-];
-
 // fallback icons (optional mapping)
 const ICON_MAP = {
   ship: Rocket,
@@ -31,7 +24,6 @@ const ICON_MAP = {
 
 const schema = yup.object({
   lookingfor: yup.number().required(),
- 
 });
 
 export const IntentStep = ({ setStepValid }) => {
