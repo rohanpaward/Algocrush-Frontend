@@ -34,7 +34,7 @@ export const ProfileDashboard = ({ onVerifyGithub }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-[#111] dark:bg-[#09090B] dark:text-slate-200 pb-24 font-sans">
+    <div className="min-h-screen bg-[#09090B] text-slate-200 pb-24 font-sans">
       {/* Top Header */}
       <nav className="flex items-center justify-between px-8 py-6 max-w-[480px] mx-auto">
         <button className="p-2 text-slate-400 hover:text-white transition-colors">
