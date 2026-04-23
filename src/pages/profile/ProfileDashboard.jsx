@@ -83,11 +83,11 @@ export const ProfileDashboard = ({ onVerifyGithub }) => {
 
           {/* Avatar Container */}
           <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-[#09090B] bg-slate-100 dark:bg-white/5">
+            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-[#09090B] bg-white dark:bg-white/5">
               {user.avatar ? (
                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-4xl font-light text-white tracking-tighter uppercase dark:text-white">
+                <div className="w-full h-full flex items-center justify-center text-4xl font-light text-black tracking-tighter uppercase dark:text-white">
                   {user.username?.charAt(0) || "R"}
                 </div>
               )}
@@ -139,9 +139,9 @@ export const ProfileDashboard = ({ onVerifyGithub }) => {
               className="w-16 h-16 rounded-full bg-white dark:bg-white/10 border-2 border-slate-200 dark:border-white/20 flex items-center justify-center text-slate-800 dark:text-white shadow-xl hover:scale-110 transition-transform relative"
             >
               <Edit2 size={24} />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-[#09090B]" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-400 dark:border-[#09090B]" />
             </button>
-            <span className="text-[10px] font-black uppercase text-white dark:text-white tracking-tighter">Edit Profile</span>
+            <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-400 tracking-tighter">Edit Profile</span>
           </div>
 
           {/* Verify GitHub (Replacement for Add Media) */}
