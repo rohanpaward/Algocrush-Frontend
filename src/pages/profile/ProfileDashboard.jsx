@@ -139,7 +139,7 @@ export const ProfileDashboard = ({ onVerifyGithub }) => {
               className="w-16 h-16 rounded-full bg-white dark:bg-white/10 border-2 border-slate-200 dark:border-white/20 flex items-center justify-center text-slate-800 dark:text-white shadow-xl hover:scale-110 transition-transform relative"
             >
               <Edit2 size={24} />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-400 dark:border-[#09090B]" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-400 " />
             </button>
             <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-400 tracking-tighter">Edit Profile</span>
           </div>
