@@ -106,7 +106,7 @@ export const ProfileDashboard = ({ onVerifyGithub }) => {
         <div className="text-center mb-10 flex flex-col items-center gap-1">
   {/* USERNAME & BADGE */}
   <div className="flex items-center justify-center gap-2">
-    <h1 className="text-3xl font-[950] tracking-tighter uppercase text-slate-900 dark:text-white">
+    <h1 className="text-3xl font-[950] tracking-tighter uppercase text-white dark:text-white">
       {user.username || "Rohan Pawar"}
     </h1>
     <ShieldCheck 
@@ -141,7 +141,7 @@ export const ProfileDashboard = ({ onVerifyGithub }) => {
               <Edit2 size={24} />
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-[#09090B]" />
             </button>
-            <span className="text-[10px] font-black uppercase text-slate-800 dark:text-white tracking-tighter">Edit Profile</span>
+            <span className="text-[10px] font-black uppercase text-white dark:text-white tracking-tighter">Edit Profile</span>
           </div>
 
           {/* Verify GitHub (Replacement for Add Media) */}
