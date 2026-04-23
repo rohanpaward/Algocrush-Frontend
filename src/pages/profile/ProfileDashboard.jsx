@@ -5,9 +5,9 @@ import {
   ShieldCheck, 
   Edit2, 
   Zap, 
-  Plus, 
-  FaGithub 
+  Plus,  
 } from "lucide-react"; // Note: verify your FaGithub import source
+import { FaGithub } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import { getMe } from '../../services/auth/auth-services';
 
