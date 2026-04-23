@@ -11,6 +11,8 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { REGISTER_USER } from "../../../constants";
 import { useNavigate } from "react-router-dom"; 
+import { useDispatch } from "react-redux";
+import { setUser } from "../../../slice/auth-slice";
 
 // Domain + Intent mapping (since Redux stores IDs)
 
@@ -28,6 +30,7 @@ export const ReviewStep = ({ setStep }) => {
 
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
 
 
@@ -80,7 +83,7 @@ export const ReviewStep = ({ setStep }) => {
         console.log("Success:", res.data);
     
         if (res?.data?.statusCode === 200) {
-          const user = res.data.user;
+          const user = res.data.data;
     
           // ✅ IMPORTANT: update state instead of waiting for /me
           // If using Redux:
@@ -88,9 +91,10 @@ export const ReviewStep = ({ setStep }) => {
     
           // If local state:
           // setUser(user); (needs lifting)
+          dispatch(setUser(res.data.data));
     
           navigate("/profile"); //  no delay needed
-          window.location.reload();
+          // window.location.reload();
         }
     
       } catch (err) {

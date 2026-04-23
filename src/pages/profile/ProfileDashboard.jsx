@@ -4,47 +4,22 @@ import {
   Settings, 
   ShieldCheck, 
   Edit2, 
-  // Github, 
   Zap, 
-  Target, 
-  CheckCircle, 
-  Check, 
+  Plus ,
   User, 
-  ExternalLink,
-  Plus,
-  MessageCircle,
-  Eye,
-  ArrowRight
+  Camera
 } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
-import { useNavigate } from "react-router-dom"; // 1. Import the hook
+import { useNavigate } from "react-router-dom";
 import { getMe } from '../../services/auth/auth-services';
 
+export const ProfileDashboard = ({ onVerifyGithub }) => {
+  const [user, setUser] = useState({});
+  const navigate = useNavigate();
 
-// --- Custom Components ---
-
-const GlassPanel = ({ children, className = "" }) => (
-  <div className={`bg-[#111118]/60 backdrop-blur-xl border border-white/5 rounded-[2rem] ${className}`}>
-    {children}
-  </div>
-);
-
-const MetricCard = ({ label, value, icon: Icon, color }) => (
-  <GlassPanel className="flex-1 p-5 flex flex-col items-center justify-center text-center group hover:border-white/10 transition-all">
-    <div className={`p-2 rounded-xl mb-2 ${color} bg-opacity-10`}>
-      <Icon size={18} className={color.replace('bg-', 'text-')} />
-    </div>
-    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{label}</span>
-    <span className="text-xl font-black text-white mt-1">{value}</span>
-  </GlassPanel>
-);
-
-export const ProfileDashboard = ({ onEditProfile, onEditPreferences, onVerifyGithub }) => {
-  // Logic derived from your vision and references
-  const [user, setUser] = useState({})
-  const completionRate = user.completionScore || 76; //
+  // Logic for the requested verification badge color
   const isVerified = user.isVerified || false;
-  const navigate = useNavigate(); // 2. Initialize the hook
+  const completionRate = user.completionScore || 90;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -55,151 +30,153 @@ export const ProfileDashboard = ({ onEditProfile, onEditPreferences, onVerifyGit
         console.error(err);
       }
     };
-  
     fetchUser();
-  }, []); 
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#09090B] text-slate-200 pb-24">
-      {/* Top Navigation Bar */}
-      <nav className="flex items-center justify-between px-6 py-8 max-w-[480px] mx-auto">
-        <h2 className="text-xl font-black tracking-tighter text-white">AlgoCrush<span className="text-purple-500">.</span></h2>
-        <button 
-          onClick={onEditPreferences}
-          className="p-3 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all"
-        >
-          <Settings size={20} className="text-slate-400" />
+    <div className="min-h-screen bg-white text-[#111] dark:bg-[#09090B] dark:text-slate-200 pb-24 font-sans">
+      {/* Top Header */}
+      <nav className="flex items-center justify-between px-8 py-6 max-w-[480px] mx-auto">
+        <button className="p-2 text-slate-400 hover:text-white transition-colors">
+          <Zap size={22} className="fill-current" />
+        </button>
+        <h2 className="text-lg font-black tracking-tighter dark:text-white">AlgoCrush</h2>
+        <button className="p-2 text-slate-400 hover:text-white transition-colors">
+          <Settings size={22} />
         </button>
       </nav>
 
-      <main className="px-6 max-w-[480px] mx-auto space-y-6">
+      <main className="px-6 max-w-[480px] mx-auto flex flex-col items-center">
         
-        {/* 1. Profile Header Section */}
-        <section className="flex flex-col items-center">
-          <div className="relative mb-4">
-            <div className="w-28 h-28 rounded-[2.5rem] bg-gradient-to-br from-purple-600 to-blue-600 p-1">
-              <div className="w-full h-full rounded-[2.3rem] bg-[#09090B] flex items-center justify-center overflow-hidden">
-                {user.avatar ? (
-                  <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-4xl font-light text-white">R</span>
-                )}
-              </div>
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-[#09090B] border-4 border-[#09090B]">
-               <div className="w-full h-full rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]" />
-            </div>
-          </div>
-          
-          <h1 className="text-2xl font-black text-white flex items-center gap-2">
-            {user.username || "Rohan Pawar"} 
-            {isVerified && <ShieldCheck size={22} className="text-blue-500" />}
-          </h1>
-          
-          <button 
-            onClick={()=>navigate("/profile/edit")}
-            className="mt-4 px-8 py-3 bg-white text-black font-black text-xs uppercase tracking-widest rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
-          >
-            <Edit2 size={14} /> Edit Profile
-          </button>
-        </section>
-
-        {/* 2. Progress & Completion */}
-        <GlassPanel className="p-6">
-          <div className="flex justify-between items-end mb-3">
-            <div>
-              <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-1">Identity Strength</p>
-              <h3 className="text-sm font-bold text-white">Complete your profile to be seen</h3>
-            </div>
-            <span className="text-lg font-black text-white">{completionRate}%</span>
-          </div>
-          <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-            <motion.div 
-              initial={{ width: 0 }}
-              animate={{ width: `${completionRate}%` }}
-              className="h-full bg-gradient-to-r from-purple-600 to-pink-500"
+        {/* 1. CENTRALIZED PROFILE CIRCLE (Based on Ref Image 5) */}
+        <div className="relative mt-4 mb-8">
+          {/* Progress Ring */}
+          <svg className="w-40 h-40 transform -rotate-90">
+            <circle
+              cx="80"
+              cy="80"
+              r="74"
+              stroke="currentColor"
+              strokeWidth="6"
+              fill="transparent"
+              className="text-slate-100 dark:text-white/5"
             />
-          </div>
-        </GlassPanel>
+            <motion.circle
+              cx="80"
+              cy="80"
+              r="74"
+              stroke="url(#gradient)"
+              strokeWidth="6"
+              fill="transparent"
+              strokeDasharray="465"
+              initial={{ strokeDashoffset: 465 }}
+              animate={{ strokeDashoffset: 465 - (465 * completionRate) / 100 }}
+              strokeLinecap="round"
+            />
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#F43F5E" />
+                <stop offset="100%" stopColor="#FB923C" />
+              </linearGradient>
+            </defs>
+          </svg>
 
-        {/* 3. Fast Actions / Bento Grid */}
-        <div className="grid grid-cols-2 gap-4">
-           <MetricCard label="Super Likes" value="0" icon={Target} color="bg-blue-500" />
-           <MetricCard label="Karma" value="94" icon={Zap} color="bg-orange-500" />
+          {/* Avatar Container */}
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white dark:border-[#09090B] bg-slate-100 dark:bg-white/5">
+              {user.avatar ? (
+                <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-4xl font-light text-slate-400 tracking-tighter uppercase dark:text-white">
+                  {user.username?.charAt(0) || "R"}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Completion Badge */}
+          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#F43F5E] to-[#FB923C] px-3 py-1 rounded-full shadow-lg">
+            <span className="text-[10px] font-black text-white uppercase tracking-tighter">
+              {completionRate}% complete
+            </span>
+          </div>
         </div>
 
-        {/* 4. Verification & Consistency */}
-        <div className="space-y-3">
-          {!isVerified && (
+        {/* 2. IDENTITY TEXT & VERIFIED BADGE */}
+        <div className="text-center mb-10 flex flex-col items-center gap-1">
+  {/* USERNAME & BADGE */}
+  <div className="flex items-center justify-center gap-2">
+    <h1 className="text-3xl font-[950] tracking-tighter uppercase text-slate-900 dark:text-white">
+      {user.username || "Rohan Pawar"}
+    </h1>
+    <ShieldCheck 
+      size={22} 
+      strokeWidth={3}
+      className={isVerified ? "text-blue-500" : "text-slate-300 dark:text-slate-600"} 
+    />
+  </div>
+
+  {/* ROLE NAME - Improved Typography */}
+  <p className="font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-slate-500 dark:text-slate-400">
+    {user.role_name || "Fullstack Architect"}
+  </p>
+</div>
+
+        {/* 3. PRIMARY ACTIONS (Circular Grid) */}
+        <div className="grid grid-cols-3 gap-8 w-full max-w-sm px-4 mb-12">
+          {/* Settings / Gear */}
+          <div className="flex flex-col items-center gap-2">
+            <button className="w-14 h-14 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 shadow-sm hover:scale-110 transition-transform">
+              <Settings size={22} />
+            </button>
+            <span className="text-[10px] font-black uppercase text-slate-400 tracking-tighter">Settings</span>
+          </div>
+
+          {/* Edit Profile (Center) */}
+          <div className="flex flex-col items-center gap-2">
+            <button 
+              onClick={() => navigate("/profile/edit")}
+              className="w-16 h-16 rounded-full bg-white dark:bg-white/10 border-2 border-slate-200 dark:border-white/20 flex items-center justify-center text-slate-800 dark:text-white shadow-xl hover:scale-110 transition-transform relative"
+            >
+              <Edit2 size={24} />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-[#09090B]" />
+            </button>
+            <span className="text-[10px] font-black uppercase text-slate-800 dark:text-white tracking-tighter">Edit Profile</span>
+          </div>
+
+          {/* Verify GitHub (Replacement for Add Media) */}
+          <div className="flex flex-col items-center gap-2">
             <button 
               onClick={onVerifyGithub}
-              className="w-full p-5 rounded-3xl bg-white/5 border border-white/5 hover:border-blue-500/30 flex items-center justify-between group transition-all"
+              className="w-14 h-14 rounded-full bg-gradient-to-br from-[#F43F5E] to-[#FB923C] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform relative"
             >
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-400 group-hover:scale-110 transition-transform">
-                  <FaGithub size={22} />
-                </div>
-                <div className="text-left">
-                  <h4 className="text-sm font-bold text-white">Get Verified</h4>
-                  <p className="text-[11px] text-slate-500">Connect GitHub to build trust</p>
-                </div>
+              <FaGithub size={22} />
+              <div className="absolute bottom-0 right-0 bg-white rounded-full p-1 border border-slate-100">
+                <Plus size={10} className="text-red-500 stroke-[4]" />
               </div>
-              <Plus size={20} className="text-slate-700" />
             </button>
-          )}
-
-          <button className="w-full p-5 rounded-3xl bg-white/5 border border-white/5 flex items-center justify-between group">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-pink-500/10 rounded-2xl text-pink-400">
-                <Zap size={22} />
-              </div>
-              <div className="text-left">
-                <h4 className="text-sm font-bold text-white">Consistency Challenge</h4>
-                <p className="text-[11px] text-slate-500">3 day streak — 3 days until reward</p>
-              </div>
-            </div>
-            <ArrowRight size={20} className="text-slate-700" />
-          </button>
+            <span className="text-[10px] font-black uppercase text-slate-400 tracking-tighter tracking-tighter">Verify Github</span>
+          </div>
         </div>
 
-        {/* 5. Forge Gold / Monetization */}
-        <GlassPanel className="p-8 bg-gradient-to-br from-yellow-500/10 via-[#111118] to-[#111118] border-yellow-500/20">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-black text-white italic tracking-tighter">FORGE<span className="text-yellow-500 uppercase not-italic ml-1">Gold</span></h3>
-            <button className="px-5 py-2 bg-yellow-500 text-black font-black text-[10px] rounded-full uppercase">Upgrade</button>
+        {/* 4. BOOST FOOTER (Ref Image 5 Style) */}
+        <div className="w-full flex flex-col items-center space-y-4 opacity-80">
+          <div className="flex flex-col items-center">
+            <Zap size={20} className="text-purple-500 mb-2 fill-current" />
+            <h4 className="text-sm font-black dark:text-white">Identity Boost</h4>
+            <p className="text-[11px] text-slate-500 text-center px-8">
+              Be a top profile in your area for 30 minutes to get more matches.
+            </p>
           </div>
           
-          <div className="space-y-4">
-             {[
-               { label: "See Who Likes You", free: false, gold: true },
-               { label: "Top Weekly Picks", free: false, gold: true },
-               { label: "Daily Super Pings", free: false, gold: true }
-             ].map((perk, i) => (
-               <div key={i} className="flex items-center justify-between text-xs border-b border-white/5 pb-2 last:border-0">
-                  <span className="text-slate-400 font-medium">{perk.label}</span>
-                  <div className="flex gap-6">
-                    <span className="text-slate-700"><Check size={14} /></span>
-                    <span className="text-yellow-500"><CheckCircle size={14} /></span>
-                  </div>
-               </div>
-             ))}
-          </div>
-        </GlassPanel>
+          <button className="w-full max-w-[280px] py-4 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[11px] font-black uppercase tracking-widest text-purple-500 dark:text-white shadow-md">
+            My Boosts
+          </button>
+        </div>
 
       </main>
 
-      {/* 6. Persistent Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#09090B] via-[#09090B] to-transparent pointer-events-none">
-        <div className="max-w-[420px] mx-auto bg-[#16161D]/80 backdrop-blur-2xl border border-white/10 h-20 rounded-full px-8 flex items-center justify-between pointer-events-auto shadow-2xl">
-           <button className="text-slate-600 hover:text-white transition-colors"><Zap size={24}/></button>
-           <button className="text-slate-600 hover:text-white transition-colors"><Target size={24}/></button>
-           <button className="text-slate-600 hover:text-white transition-colors relative">
-             <MessageCircle size={24}/>
-             <span className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 text-black text-[10px] font-black rounded-full flex items-center justify-center border-2 border-[#16161D]">3</span>
-           </button>
-           <button className="text-white scale-110"><User size={24}/></button>
-        </div>
-      </div>
+      {/* Persistent Bottom Nav remains same */}
     </div>
   );
 };

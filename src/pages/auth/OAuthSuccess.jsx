@@ -1,9 +1,12 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../../services/auth/auth-services";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../slice/auth-slice";
 
 const OAuthSuccess = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const hasRun = useRef(false);
 
   useEffect(() => {
@@ -22,6 +25,10 @@ const OAuthSuccess = () => {
         }
 
         const data = await getMe();
+        const user = data.user || data.data;
+        dispatch(setUser(user));
+
+
 
         if (data?.isNewUser === true) {
           navigate("/onboarding");
