@@ -87,7 +87,7 @@ export const ProfileDashboard = ({ onVerifyGithub }) => {
               {user.avatar ? (
                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-4xl font-light text-slate-400 tracking-tighter uppercase dark:text-white">
+                <div className="w-full h-full flex items-center justify-center text-4xl font-light text-white tracking-tighter uppercase dark:text-white">
                   {user.username?.charAt(0) || "R"}
                 </div>
               )}
@@ -117,7 +117,7 @@ export const ProfileDashboard = ({ onVerifyGithub }) => {
   </div>
 
   {/* ROLE NAME - Improved Typography */}
-  <p className="font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-slate-500 dark:text-slate-400">
+  <p className="font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-white dark:text-white">
     {user.role_name || "Fullstack Architect"}
   </p>
 </div>
