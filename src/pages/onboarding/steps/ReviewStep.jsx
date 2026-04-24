@@ -1,201 +1,153 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
-import {
-  ShieldCheck,
-  Target,
-  Rocket,
-  RotateCcw,
-  MessageSquare,
-} from "lucide-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { REGISTER_USER } from "../../../constants";
-import { useNavigate } from "react-router-dom"; 
-import { useDispatch } from "react-redux";
 import { setUser } from "../../../slice/auth-slice";
 
-// Domain + Intent mapping (since Redux stores IDs)
-
-const INTENT_MAP = {
-  1: "Co-Founder",
-  2: "Side Project",
-  3: "Freelance",
-  4: "Learning",
-  5: "Open Source",
-  6: "Hackathons",
-  7: "Networking",
-};
-
 export const ReviewStep = ({ setStep }) => {
-
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-
-
-  // Get Redux data
   const data = useSelector((state) => state.onboarding.formData);
-  const domainList = useSelector((state) => state.onboarding.domains);
+  const lookingForMapping = useSelector((state) => state.onboarding.lookingForOptions);
+  const buildTypes = useSelector((state) => state.onboarding.buildtypesoption);
+
+  const selectedIntent = lookingForMapping.find(
+    (item) => item.id === data.lookingfor
+  );
 
   const DOMAIN_MAP = useMemo(() => {
-    return domainList.reduce((acc, domain) => {
-      acc[domain.id] = domain.name;
+    return (buildTypes || []).reduce((acc, item) => {
+      acc[String(item.id)] = item.name;
       return acc;
     }, {});
-  }, [domainList]);
-  
+  }, [buildTypes]);
 
-  // Basic info
-  const name = data.name || "Alex Chen";
-  const role = data.roleName || "Cloud Native Engineer";
-  const firstLetter = name.charAt(0).toUpperCase();
-
-  //  Project
-  const projectName = data.projectName || "Nexus Protocol";
-  const projectDesc =
-    data.projectDesc || "Matching serious builders fast.";
-
-  //  Domains (IDs → names, max 3)
-  const selectedDomains =
-  data.domainIds?.map((id) => DOMAIN_MAP[id])?.filter(Boolean) || [];
-
-
-  //  Intent
-  const intent =
-    INTENT_MAP[data.lookingfor] || "Collaboration";
-
-
-    const handleRegister = async () => {
-      try {
-        const token = localStorage.getItem("token");
-    
-        const res = await axios.post(
-          REGISTER_USER,
-          data,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-    
-        console.log("Success:", res.data);
-    
-        if (res?.data?.statusCode === 200) {
-          const user = res.data.data;
-    
-          // ✅ IMPORTANT: update state instead of waiting for /me
-          // If using Redux:
-          // dispatch(setUser(user));
-    
-          // If local state:
-          // setUser(user); (needs lifting)
-          dispatch(setUser(res.data.data));
-    
-          navigate("/profile"); //  no delay needed
-          // window.location.reload();
-        }
-    
-      } catch (err) {
-        console.error("Error:", err.response?.data || err.message);
+  const handleRegister = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(REGISTER_USER, data, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res?.data?.statusCode === 200) {
+        dispatch(setUser(res.data.data));
+        navigate("/profile");
       }
-    };
+    } catch (err) { console.error(err); }
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center pb-20 pt-10 px-4">
+    <div className="flex flex-col items-center justify-center pb-24 pt-8 px-6">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-[400px] bg-[#0A0A0F] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-[380px] bg-[#0A0A0F] border border-white/[0.08] rounded-[2rem] overflow-hidden shadow-2xl flex flex-col max-h-[82vh]"
       >
-        {/* Header */}
-        <div className="p-8 pb-6">
-          <div className="flex items-center gap-5 mb-6">
-            <div className="relative">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-2xl font-black text-white shadow-lg">
-                {firstLetter}
-              </div>
-              <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-[#0A0A0F]" />
-            </div>
+        
+        {/* 1. HEADER (Dark Theme Adaptation) */}
+        <div className="relative bg-[#161622] pt-6 pb-8 text-center rounded-t-[2rem] border-b border-white/[0.05]">
+          <h1 className="text-xl font-[900] text-white tracking-tight">
+            {data.name || "Rohan"}
+          </h1>
+          <p className="text-[13px] font-medium text-slate-400 mt-1">
+            {data.roleName || "Backend Developer"}
+          </p>
 
-            <div>
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                {name}
-                <ShieldCheck size={18} className="text-blue-500" />
-              </h3>
-              <p className="text-xs text-slate-500 uppercase">
-                {role}
-              </p>
-            </div>
-          </div>
-
-          {/* Domains */}
-          <div className="flex gap-2 mb-8 flex-wrap">
-            {selectedDomains.length ? (
-              selectedDomains.slice(0, 3).map((domain) => (
-                <span
-                  key={domain}
-                  className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] text-slate-400 uppercase"
-                >
-                  {domain}
-                </span>
-              ))
-            ) : (
-              <span className="text-xs text-slate-600">
-                No domains selected
-              </span>
-            )}
-          </div>
-
-          {/* Project */}
-          <div className="space-y-3 mb-8">
-            <div className="flex items-center gap-2">
-              <Target size={14} className="text-purple-500" />
-              <span className="text-[10px] text-slate-600 uppercase">
-                Active Build
+          {/* OVERLAPPING AVATAR (Left Aligned) */}
+          <div className="absolute left-6 -bottom-7 z-10">
+            <div className="w-14 h-14 rounded-full bg-[#1E1E2A] border-4 border-[#0A0A0F] flex items-center justify-center shadow-sm">
+              <span className="text-xl font-black text-indigo-400">
+                {data.name?.charAt(0) || "R"}
               </span>
             </div>
-
-            <div className="p-4 rounded-2xl bg-[#111118] border border-white/5">
-              <h4 className="text-sm font-bold text-white">
-                {projectName}
-              </h4>
-              <p className="text-xs text-slate-500 italic">
-                "{projectDesc}"
-              </p>
-            </div>
-          </div>
-
-          {/* Intent */}
-          <div className="py-3 px-4 bg-purple-500/5 border border-purple-500/10 rounded-xl flex justify-between">
-            <span className="text-[10px] text-slate-500 uppercase">
-              Looking for
-            </span>
-            <span className="text-xs font-bold text-purple-400 uppercase">
-              {intent}
-            </span>
           </div>
         </div>
+
+        {/* 2. SCROLLABLE BODY */}
+        <div className="p-6 pt-10 space-y-6 overflow-y-auto custom-scrollbar flex-1">
+          
+          {/* THE VIBE (Dark Theme Box) */}
+          <div className="bg-white/[0.03] border border-white/[0.05] rounded-xl p-4 flex gap-3 items-start shadow-sm">
+            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
+            <p className="text-[13px] font-medium text-slate-300 italic leading-snug">
+              {data.vibeAnswer || "Start building"}
+            </p>
+          </div>
+
+          {/* EXPERTISE CHIPS */}
+          <div>
+            <h4 className="text-xs font-semibold text-slate-500 mb-3">Expertise</h4>
+            <div className="flex flex-wrap gap-2">
+              {data.buildTypeIds?.map((id) => {
+                const domainName = DOMAIN_MAP[String(id)] || "Unknown";
+                return (
+                  <span key={id} className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-slate-300 text-xs font-medium shadow-sm">
+                    {domainName.charAt(0).toUpperCase() + domainName.slice(1)}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* STATUS & INTENT */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-3.5">
+              <p className="text-xs font-medium text-slate-500 mb-1.5">Status</p>
+              <div className="flex items-center gap-2 text-sm font-bold text-emerald-400 capitalize">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                {data.collabStatus || "Active"}
+              </div>
+            </div>
+            
+            <div className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-3.5">
+              <p className="text-xs font-medium text-slate-500 mb-1.5">Looking for</p>
+              <p className="text-sm font-bold text-slate-200 truncate">
+                {selectedIntent ? selectedIntent.label : "Co-Founder"}
+              </p>
+            </div>
+          </div>
+
+          {/* HARDEST MOMENT */}
+          <div>
+            <h4 className="text-xs font-semibold text-slate-500 mb-3">Hardest Build Moment</h4>
+            <div className="bg-orange-500/[0.03] border border-orange-500/10 rounded-2xl p-5">
+              <p className="text-[11px] font-bold text-orange-500 mb-1.5 uppercase tracking-wide">The Challenge</p>
+              <p className="text-sm text-slate-300 mb-4 leading-relaxed">
+                "{data.projectChallenge || "Discovery algorithm to retrieve the users."}"
+              </p>
+              
+              <p className="text-[11px] font-bold text-orange-500 mb-1.5 uppercase tracking-wide">The Solution</p>
+              <p className="text-sm text-slate-300 leading-relaxed font-medium">
+                {data.projectSolution || "By designing the algorithm to..."}
+              </p>
+            </div>
+          </div>
+
+          {/* CURRENTLY BUILDING */}
+          <div>
+            <h4 className="text-xs font-semibold text-slate-500 mb-3">Currently Building</h4>
+            <div className="bg-white/[0.02] border border-white/[0.04] rounded-2xl p-4">
+              <h5 className="text-sm font-bold text-white mb-1.5">{data.projectName || "AlgoCrush"}</h5>
+              <p className="text-[13px] text-slate-400 leading-relaxed">
+                {data.currentBuild || data.projectProblem || "Nothing specific right now — open to ideas."}
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        {/* 3. STICKY CTA */}
+        <div className="p-5 bg-white/[0.01] border-t border-white/[0.04]">
+          <button 
+            onClick={handleRegister}
+            className="w-full py-4 rounded-xl bg-white text-black text-[13px] font-[900] hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
+          >
+            Create Profile
+          </button>
+        </div>
       </motion.div>
-
-      {/* Actions */}
-      <div className="flex items-center gap-5 mt-12">
-        <button
-          onClick={() => setStep(1)}
-          className="w-14 h-14 rounded-full bg-[#0A0A0F] border border-white/5 flex items-center justify-center text-slate-500 hover:text-white"
-        >
-          <RotateCcw size={22} />
-        </button>
-
-        <button onClick= { handleRegister }className="h-16 px-10 rounded-full bg-white text-black font-bold flex items-center gap-3">
-          Enter Algocrush <Rocket size={20} />
-        </button>
-
-        <button className="w-14 h-14 rounded-full bg-[#0A0A0F] border border-white/5 flex items-center justify-center text-slate-500 hover:text-white">
-          <MessageSquare size={22} />
-        </button>
-      </div>
     </div>
   );
 };

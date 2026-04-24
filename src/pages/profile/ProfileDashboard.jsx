@@ -10,25 +10,15 @@ import {
 import { FaGithub } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import { getMe } from '../../services/auth/auth-services';
+import { useSelector } from 'react-redux';
 
 export const ProfileDashboard = ({ onVerifyGithub }) => {
-  const [user, setUser] = useState({});
   const navigate = useNavigate();
+
+  const { user } = useSelector((state) => state.auth); // 🔥 use Redux
 
   const isVerified = user.isVerified || false;
   const completionRate = user.completionScore || 90;
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await getMe();
-        setUser(res.user || res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchUser();
-  }, []);
 
   return (
     <div className="min-h-screen bg-[#09090B] text-slate-200 pb-24 font-sans selection:bg-purple-500/30">

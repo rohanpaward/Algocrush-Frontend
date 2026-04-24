@@ -6,12 +6,13 @@ import { Rocket, Users, BookOpen, Zap } from "lucide-react";
 
 // Redux
 import { useDispatch, useSelector } from "react-redux";
-import { updateForm } from "../../../slice/onboarding-slice";
+import { fetchLookingFor, updateForm } from "../../../slice/onboarding-slice";
 
 // API
 import api from "../../../api/axiosInstance";
 import { GET_LOOKING_FOR } from "../../../constants";
 import * as yup from "yup";
+
 
 
 // fallback icons (optional mapping)
@@ -46,6 +47,11 @@ export const IntentStep = ({ setStepValid }) => {
   
     validate();
   }, [data]);
+
+
+  useEffect(() => {
+  dispatch(fetchLookingFor());
+}, [dispatch]);
 
   useEffect(() => {
     setStepValid(isValid);
