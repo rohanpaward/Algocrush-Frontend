@@ -40,7 +40,7 @@ export const BuildTypesEditor = () => {
   }, []);
 
   // 3. Mapping IDs (Backend) to labels (Frontend)
-  const selectedIds = user?.build_type_ids || [];
+  const selectedIds = user?.buildTypeIds || [];
 
   const toggleBuildType = (typeId) => {
     let updated;
@@ -52,7 +52,7 @@ export const BuildTypesEditor = () => {
     }
     
     // Sync with Auth Slice
-    dispatch(updateUser({ build_type_ids: updated }));
+    dispatch(updateUser({ buildTypeIds: updated }));
   };
 
   return (

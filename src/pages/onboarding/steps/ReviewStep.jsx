@@ -129,7 +129,6 @@ export const ReviewStep = ({ setStep }) => {
           <div>
             <h4 className="text-xs font-semibold text-slate-500 mb-3">Currently Building</h4>
             <div className="bg-white/[0.02] border border-white/[0.04] rounded-2xl p-4">
-              <h5 className="text-sm font-bold text-white mb-1.5">{data.projectName || "AlgoCrush"}</h5>
               <p className="text-[13px] text-slate-400 leading-relaxed">
                 {data.currentBuild || data.projectProblem || "Nothing specific right now — open to ideas."}
               </p>
