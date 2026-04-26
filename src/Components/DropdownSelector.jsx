@@ -9,19 +9,24 @@ export const DropdownSelector = ({ label, value, options, onSelect, isOpen, setI
     // Close when clicking outside
     useEffect(() => {
       const handler = (e) => {
-        if (containerRef.current && !containerRef.current.contains(e.target)) setIsOpen(false);
+        if (containerRef.current && !containerRef.current.contains(e.target)) {
+          setIsOpen(false);
+        }
       };
-      document.addEventListener("mousedown", handler);
-      return () => document.removeEventListener("mousedown", handler);
+      document.addEventListener("click", handler);
+      return () => document.removeEventListener("click", handler);
     }, [setIsOpen]);
   
     return (
       <div className="relative space-y-3" ref={containerRef}>
-        <label className="text-sm font-medium text-slate-300">
+        <label className="text-[10px] font-medium px-1">
           {label}
         </label>
         <div 
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={(e) =>{ 
+            e.stopPropagation();
+            setIsOpen(!isOpen)
+          }}
           className="w-full bg-[#12121A] border border-white/5 rounded-xl p-4 text-sm text-slate-300 cursor-pointer flex justify-between items-center hover:border-white/10 transition-all"
         >
           <span className={value ? "text-slate-200" : "text-slate-600"}>
@@ -37,7 +42,8 @@ export const DropdownSelector = ({ label, value, options, onSelect, isOpen, setI
                 <div
                   key={opt.value}
                   className="px-4 py-3 hover:bg-white/5 cursor-pointer text-sm text-slate-400 hover:text-white transition-colors border-b border-white/[0.02] last:border-0"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation()
                     onSelect(opt);
                     setIsOpen(false);
                   }}

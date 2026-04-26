@@ -21,28 +21,30 @@ export const BasicInfoFields = ({ data, onUpdate, roles, activeDropdown, setActi
 
   return (
     <div className="space-y-10">
-      <Input 
-        label="Display Name *" 
-        value={data.username || ""} 
-        onChange={(e) => onUpdate({ username: e.target.value })} 
+      <Input
+        label="Display Name *"
+        value={data.username || ""}
+        onChange={(e) => onUpdate({ username: e.target.value })}
       />
-      
-      <Input 
-        label="College / Institution *" 
-        value={data.college_name || ""} 
-        onChange={(e) => onUpdate({ college_name: e.target.value })} 
+
+      <Input
+        label="College / Institution *"
+        value={data.college_name || ""}
+        onChange={(e) => onUpdate({ college_name: e.target.value })}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <DropdownSelector
           label="Academic Year *"
           placeholder="Select Year"
-          value={selectedYearLabel}
+          value={selectedYearLabel} 
           options={STUDY_YEAR_OPTIONS}
           isOpen={activeDropdown === 'year'}
           setIsOpen={(val) => setActiveDropdown(val ? 'year' : null)}
-          onSelect={(opt) => onUpdate({ study_year: opt.value })}
-        />
+          onSelect={(opt) => {
+            onUpdate({ study_year: opt.value });
+          }}
+          />
 
         <DropdownSelector
           label="Collaboration Status *"
