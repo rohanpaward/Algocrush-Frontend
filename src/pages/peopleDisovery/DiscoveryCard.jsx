@@ -105,20 +105,21 @@ const ProfileCard = ({ profile, index, setCards, cards, isTop }) => {
 
   return (
     <motion.div
-      className="absolute w-full h-[81vh] max-h-[650px] max-w-[380px] bg-[#111111] border border-[#2a2a2a] rounded-3xl flex flex-col overflow-hidden origin-bottom"
-      style={{
-        zIndex: 100 - index,
-        y: index * 12,
-        scale: 1 - index * 0.04,
-        x,
-        rotate,
-        boxShadow: `0 0 20px ${x.get() > 0 ? glowRight.get() : glowLeft.get()}`
-      }}
-      drag={isTop && !isExpanded ? "x" : false}
-      dragConstraints={{ left: 0, right: 0 }}
-      onDragEnd={handleDragEnd}
-      animate={controls}
-    >
+    className="absolute w-full h-[72vh] max-h-[580px] max-w-[360px] bg-[#111111] border border-[#2a2a2a] rounded-3xl flex flex-col overflow-hidden origin-bottom"
+    style={{
+      zIndex: 100 - index,
+      // 🔥 Lifts the stack up from the bottom so it doesn't overlap the nav
+      y: (index * 12) - 40, 
+      scale: 1 - index * 0.04,
+      x,
+      rotate,
+      boxShadow: `0 0 20px ${x.get() > 0 ? glowRight.get() : glowLeft.get()}`
+    }}
+    drag={isTop && !isExpanded ? "x" : false}
+    dragConstraints={{ left: 0, right: 0 }}
+    onDragEnd={handleDragEnd}
+    animate={controls}
+  >
       {/* LIKE / PASS STAMPS */}
       <motion.div style={{ opacity: likeOpacity }} className="absolute top-8 left-8 z-50 pointer-events-none">
         <div className="border-4 border-green-500 text-green-500 text-4xl font-black px-4 py-1 rounded-xl transform -rotate-12 uppercase tracking-widest">Like</div>
