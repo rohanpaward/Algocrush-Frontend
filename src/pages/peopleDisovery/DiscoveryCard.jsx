@@ -105,21 +105,24 @@ const ProfileCard = ({ profile, index, setCards, cards, isTop }) => {
 
   return (
     <motion.div
-    className="absolute w-full h-[72vh] max-h-[580px] max-w-[360px] bg-[#111111] border border-[#2a2a2a] rounded-3xl flex flex-col overflow-hidden origin-bottom"
-    style={{
-      zIndex: 100 - index,
-      // 🔥 Lifts the stack up from the bottom so it doesn't overlap the nav
-      y: (index * 12) - 40, 
-      scale: 1 - index * 0.04,
-      x,
-      rotate,
-      boxShadow: `0 0 20px ${x.get() > 0 ? glowRight.get() : glowLeft.get()}`
-    }}
-    drag={isTop && !isExpanded ? "x" : false}
-    dragConstraints={{ left: 0, right: 0 }}
-    onDragEnd={handleDragEnd}
-    animate={controls}
-  >
+      // FIX 1: Replaced exact pixel max-heights with absolute inset bounding.
+      // This ensures the card exactly fills the wrapper we provide it, never overflowing.
+      className="absolute inset-0 bg-[#111111] border border-[#2a2a2a] rounded-[24px] flex flex-col overflow-hidden origin-bottom shadow-2xl"
+      style={{
+        zIndex: 100 - index,
+        // FIX 2: Switched to negative index translation.
+        // Instead of pushing cards DOWN (which causes clipping), we pull the back cards UP.
+        y: index * -12, 
+        scale: 1 - index * 0.04,
+        x,
+        rotate,
+        boxShadow: `0 0 20px ${x.get() > 0 ? glowRight.get() : glowLeft.get()}`
+      }}
+      drag={isTop && !isExpanded ? "x" : false}
+      dragConstraints={{ left: 0, right: 0 }}
+      onDragEnd={handleDragEnd}
+      animate={controls}
+    >
       {/* LIKE / PASS STAMPS */}
       <motion.div style={{ opacity: likeOpacity }} className="absolute top-8 left-8 z-50 pointer-events-none">
         <div className="border-4 border-green-500 text-green-500 text-4xl font-black px-4 py-1 rounded-xl transform -rotate-12 uppercase tracking-widest">Like</div>
@@ -251,14 +254,6 @@ const ProfileCard = ({ profile, index, setCards, cards, isTop }) => {
                </section>
                </section>
 
-               {/* Vibe Deep Dive */}
-               {/* <section className="space-y-3">
-                 <h3 className="text-[10px] font-semibold text-slate-500 tracking-[0.1em] uppercase">3AM Idea Check</h3>
-                 <div className="bg-[#7c3aed]/10 border border-[#7c3aed]/20 rounded-xl p-5">
-                    <p className="text-lg text-[#d8b4fe] italic font-serif leading-relaxed text-center px-4">"{profile.vibe}"</p>
-                 </div>
-               </section> */}
-
                {/* Links Row */}
                <section className="space-y-3 pb-8">
                  <h3 className="text-[10px] font-semibold text-slate-500 tracking-[0.1em] uppercase">External Links</h3>
@@ -280,8 +275,12 @@ export const DiscoveryFeed = () => {
   const [cards, setCards] = useState(PROFILES);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center overflow-hidden p-4 relative font-sans">
-      <div className="relative w-full max-w-[380px] h-[85vh] max-h-[720px] flex items-center justify-center">
+    // 🔥 FIX 3: Replaced min-h-screen with h-[100dvh] and added specific padding 
+    // to account for your app's bottom navigation bar.
+    <div className="h-[100dvh] w-full bg-[#0a0a0a] flex items-center justify-center overflow-hidden font-sans pb-[80px]">
+      
+      {/* 🔥 FIX 4: Constrained the wrapper height so the absolute cards inside it scale correctly. */}
+      <div className="relative w-full max-w-[380px] h-[calc(100%-40px)] mx-4 flex items-center justify-center">
         {cards.length === 0 ? (
           <div className="text-slate-500 text-sm font-medium">No more builders in your area.</div>
         ) : (
