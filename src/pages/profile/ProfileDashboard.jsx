@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux';
 export const ProfileDashboard = ({ onVerifyGithub }) => {
   const navigate = useNavigate();
 
-  const { user } = useSelector((state) => state.auth); // 🔥 use Redux
+  const { user } = useSelector((state) => state.auth); //  use Redux
 
   const isVerified = user.isVerified || false;
   const completionRate = user.completionScore || 90;

@@ -21,7 +21,7 @@ const ProtectedLayout = () => {
   // 🔹 Navigation handler
   const handleTabChange = (tabId) => {
     if (tabId === "profile") navigate("/profile");
-    if (tabId === "feed") navigate("/home");
+    if (tabId === "feed") navigate("/people/discovery");
   };
 
   // =====================

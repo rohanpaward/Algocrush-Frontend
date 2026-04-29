@@ -8,6 +8,7 @@ import ProtectedLayout from "./Components/ProtectedLayout";
 import Onboarding from "./pages/onboarding/Onboarding";
 import { ProfileDashboard } from "./pages/profile/ProfileDashboard";
 import { EditProfile } from "./pages/profile/EditProfile";
+import DiscoveryFeed from "./pages/peopleDisovery/DiscoveryCard";
 
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
 
     {/*PROTECTED GROUP */}
     <Route element={<ProtectedLayout />}>
-      <Route path="/home" element={<Home />} />
+      <Route path="/people/discovery" element={<DiscoveryFeed />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/profile" element={ <ProfileDashboard/>} />
       <Route path='/profile/edit' element={<EditProfile/>}/>
