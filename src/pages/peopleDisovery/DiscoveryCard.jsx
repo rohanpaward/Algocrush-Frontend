@@ -1,45 +1,48 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, useMotionValue, useTransform, useAnimation, AnimatePresence } from "framer-motion";
 import { ShieldCheck, ChevronUp, ChevronDown, Globe, ExternalLink } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { getUserFeed } from "../../services/discovery/discoveryFeed-service";
+
 
 // --- MOCK DATA (Rahul & Priya) ---
-const PROFILES = [
-  {
-    id: 1,
-    name: "Rahul Krishnan",
-    role: "Full-stack • PM",
-    college: "BITS Pilani • 3rd year • CS",
-    status: "Active",
-    vibe: "Voice memo it and sleep — if it's good it'll survive morning",
-    projectName: "AI scheduling tool for college clubs",
-    projectDesc: "Looking for a designer before demo day.",
-    githubUrl: "#",
-    liveUrl: "#",
-    canBuild: ["Web apps", "APIs & backends", "UI design", "AI integrations"],
-    intent: "Cofounder",
-    challenge: "Matching algo kept failing. Realised the problem wasn't the code — it was garbage input data.",
-    solution: "Rebuilt the onboarding from scratch.",
-    color: "from-purple-500 to-blue-500"
-  },
-  {
-    id: 2,
-    name: "Priya Sharma",
-    role: "Designer • No-code",
-    college: "NID Ahmedabad • 2nd year • UX Design",
-    status: "Selective",
-    vibe: "Make a rough Figma sketch right then — can't sleep till it's out of my head",
-    projectName: "Campus Event App",
-    projectDesc: "Nothing specific right now — open to ideas",
-    githubUrl: "#",
-    liveUrl: "#",
-    canBuild: ["Product design", "Prototypes", "No-code apps", "Brand & visual"],
-    intent: "Build partner",
-    challenge: "Spent a week on a design no one understood. Did 5 user interviews in 2 days.",
-    solution: "Scrapped everything and rebuilt in 3 hours.",
-    color: "from-emerald-400 to-teal-500"
-  }
-];
+// const PROFILES = [
+//   {
+//     id: 1,
+//     name: "Rahul Krishnan",
+//     role: "Full-stack • PM",
+//     college: "BITS Pilani • 3rd year • CS",
+//     status: "Active",
+//     vibe: "Voice memo it and sleep — if it's good it'll survive morning",
+//     projectName: "AI scheduling tool for college clubs",
+//     projectDesc: "Looking for a designer before demo day.",
+//     githubUrl: "#",
+//     liveUrl: "#",
+//     canBuild: ["Web apps", "APIs & backends", "UI design", "AI integrations"],
+//     intent: "Cofounder",
+//     challenge: "Matching algo kept failing. Realised the problem wasn't the code — it was garbage input data.",
+//     solution: "Rebuilt the onboarding from scratch.",
+//     color: "from-purple-500 to-blue-500"
+//   },
+//   {
+//     id: 2,
+//     name: "Priya Sharma",
+//     role: "Designer • No-code",
+//     college: "NID Ahmedabad • 2nd year • UX Design",
+//     status: "Selective",
+//     vibe: "Make a rough Figma sketch right then — can't sleep till it's out of my head",
+//     projectName: "Campus Event App",
+//     projectDesc: "Nothing specific right now — open to ideas",
+//     githubUrl: "#",
+//     liveUrl: "#",
+//     canBuild: ["Product design", "Prototypes", "No-code apps", "Brand & visual"],
+//     intent: "Build partner",
+//     challenge: "Spent a week on a design no one understood. Did 5 user interviews in 2 days.",
+//     solution: "Scrapped everything and rebuilt in 3 hours.",
+//     color: "from-emerald-400 to-teal-500"
+//   }
+// ];
 
 // --- HELPER COMPONENTS ---
 const StatusPill = ({ status }) => {
@@ -73,9 +76,11 @@ const IntentPill = ({ intent }) => {
 
 // --- PROFILE CARD COMPONENT ---
 const ProfileCard = ({ profile, index, setCards, cards, isTop }) => {
+    console.log(profile,'this is profile inside profilecard func')
   const [isExpanded, setIsExpanded] = useState(false);
   const x = useMotionValue(0);
   const controls = useAnimation();
+
 
   // Animation Transforms
   const rotate = useTransform(x, [-200, 200], [-8, 8]);
@@ -152,7 +157,7 @@ const ProfileCard = ({ profile, index, setCards, cards, isTop }) => {
         <div className="p-5 space-y-2">
           <p className="text-[10px] font-semibold text-slate-500 tracking-[0.1em] uppercase">Vibe</p>
           <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4">
-            <p className="text-sm italic text-slate-300 leading-relaxed font-serif">"{profile.vibe}"</p>
+            <p className="text-sm italic text-slate-300 leading-relaxed font-serif">"{profile.vibe_answer}"</p>
           </div>
         </div>
 
@@ -243,13 +248,13 @@ const ProfileCard = ({ profile, index, setCards, cards, isTop }) => {
                  
                  <div className="bg-[#1a1208] border border-amber-900/30 rounded-xl p-4 space-y-3 mt-4">
                     <p className="text-xs font-bold text-amber-500 uppercase">Hardest Build Moment</p>
-                    <p className="text-sm text-amber-100/80 italic font-serif leading-relaxed">"{profile.challenge}"</p>
+                    <p className="text-sm text-amber-100/80 italic font-serif leading-relaxed">"{profile.project_challenge}"</p>
                  </div>
                  
                  <section className="space-y-3">
                  <h3 className="text-[10px] font-semibold text-slate-500 tracking-[0.1em] uppercase">How did you fix it</h3>
                  <div className="bg-[#7c3aed]/10 border border-[#7c3aed]/20 rounded-xl p-5">
-                    <p className="text-lg text-[#d8b4fe] italic font-serif leading-relaxed text-center px-4">"{profile.solution}"</p>
+                    <p className="text-lg text-[#d8b4fe] italic font-serif leading-relaxed text-center px-4">"{profile.project_solution}"</p>
                  </div>
                </section>
                </section>
@@ -270,40 +275,115 @@ const ProfileCard = ({ profile, index, setCards, cards, isTop }) => {
   );
 };
 
+const capitalize = (str) =>
+    str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
+  
+  const gradients = [
+    "from-purple-500 to-blue-500",
+    "from-emerald-400 to-teal-500",
+    "from-pink-500 to-rose-500",
+    "from-indigo-500 to-purple-500"
+  ];
+  
+  const getRandomGradient = () =>
+    gradients[Math.floor(Math.random() * gradients.length)];
+
 // --- MAIN FEED CONTAINER ---
 export const DiscoveryFeed = () => {
-  const [cards, setCards] = useState(PROFILES);
+    const { user } = useSelector((state) => state.auth);
+  
+    const [cards, setCards] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+  
+    useEffect(() => {
+      if (!user?.id) return;
+  
+      const fetchFeed = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+  
+          const res = await getUserFeed(user.id);
+          console.log("API RESPONSE:", res);
 
-  return (
-    // 🔥 FIX 3: Replaced min-h-screen with h-[100dvh] and added specific padding 
-    // to account for your app's bottom navigation bar.
-    <div className="h-[100dvh] w-full bg-[#0a0a0a] flex items-center justify-center overflow-hidden font-sans pb-[80px]">
-      
-      {/* 🔥 FIX 4: Constrained the wrapper height so the absolute cards inside it scale correctly. */}
-      <div className="relative w-full max-w-[380px] h-[calc(100%-40px)] mx-4 flex items-center justify-center">
-        {cards.length === 0 ? (
-          <div className="text-slate-500 text-sm font-medium">No more builders in your area.</div>
-        ) : (
-          cards.map((profile, index) => (
-            <ProfileCard 
-              key={profile.id} 
-              profile={profile} 
-              index={index} 
-              cards={cards} 
-              setCards={setCards} 
-              isTop={index === 0} 
-            />
-          )).reverse() // Reverse so the first item in array renders on top in the DOM
-        )}
+          const apiData = res?.data?.data || res?.data || [];
+
+          if (!Array.isArray(apiData)) {
+            console.error("Invalid API format:", res);
+            setCards([]);
+            return;
+          }
+    
+  
+          const formatted = apiData?.map((u) => ({
+            ...u,
+            name: u.username,
+            role: u.role_name,
+            status: capitalize(u.collab_status),
+            intent: u.looking_for_label,
+            canBuild: u.build_types || [],
+            projectDesc: u.project_problem,
+            college: `${u.college_name} • ${u.study_year}`,
+            color: getRandomGradient()
+          }));
+  
+          setCards(formatted);
+  
+        } catch (err) {
+          console.error(err);
+          setError("Failed to load feed");
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchFeed();
+    }, [user?.id]);
+
+
+    console.log(cards,'this si the cards')
+  
+    return (
+      <div className="h-[100dvh] w-full bg-[#0a0a0a] flex items-center justify-center overflow-hidden font-sans pb-[80px]">
+        
+        <div className="relative w-full max-w-[380px] h-[calc(100%-40px)] mx-4 flex items-center justify-center">
+  
+          {/* ✅ Loading */}
+          {loading && <div className="text-white">Loading...</div>}
+  
+          {/* ✅ Error */}
+          {error && <div className="text-red-500">{error}</div>}
+  
+          {/* ✅ Empty */}
+          {!loading && !error && cards.length === 0 && (
+            <div className="text-slate-500 text-sm font-medium">
+              No more builders in your area.
+            </div>
+          )}
+  
+          {/* ✅ Data */}
+          {!loading && !error &&
+            [...cards].reverse().map((profile, index) => (
+              <ProfileCard
+                key={profile.id}
+                profile={profile}
+                index={index}
+                cards={cards}
+                setCards={setCards}
+                isTop={index === 0}
+              />
+            ))
+          }
+  
+        </div>
+  
+        <style dangerouslySetInnerHTML={{__html: `
+          .no-scrollbar::-webkit-scrollbar { display: none; }
+          .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        `}} />
       </div>
-
-      {/* Global styles for hiding scrollbars on webkit but allowing scroll */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}} />
-    </div>
-  );
-};
+    );
+  };
 
 export default DiscoveryFeed;

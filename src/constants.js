@@ -11,3 +11,4 @@ export const GET_BUILD_TYPES ='/get-build-types'
 export  const REGISTER_USER = `${BASEAPI}/register-user`
 export const AUTH_ME = `${BASEAPI}/auth/me`
 export const UPDATE_USER = '/update-user'
+export const GET_USER_FEED ='/discovery/user-feed'

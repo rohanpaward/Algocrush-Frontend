@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { ShieldCheck, Loader2 } from "lucide-react"; // Imported Loader2
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,6 +10,8 @@ import { setUser } from "../../../slice/auth-slice";
 export const ReviewStep = ({ setStep }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  // 1. Added loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const data = useSelector((state) => state.onboarding.formData);
   const lookingForMapping = useSelector((state) => state.onboarding.lookingForOptions);
@@ -25,7 +28,10 @@ export const ReviewStep = ({ setStep }) => {
     }, {});
   }, [buildTypes]);
 
+  // 2. Updated handleRegister to toggle loading state
   const handleRegister = async () => {
+    if (isLoading) return; // Prevent double-clicks
+    setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(REGISTER_USER, data, {
@@ -35,7 +41,11 @@ export const ReviewStep = ({ setStep }) => {
         dispatch(setUser(res.data.data));
         navigate("/profile");
       }
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err); 
+    } finally {
+      setIsLoading(false); // Stop loading regardless of success/error
+    }
   };
 
   return (
@@ -137,13 +147,21 @@ export const ReviewStep = ({ setStep }) => {
 
         </div>
 
-        {/* 3. STICKY CTA */}
+        {/* 3. STICKY CTA WITH LOADER */}
         <div className="p-5 bg-white/[0.01] border-t border-white/[0.04]">
           <button 
             onClick={handleRegister}
-            className="w-full py-4 rounded-xl bg-white text-black text-[13px] font-[900] hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
+            disabled={isLoading}
+            className="w-full py-4 rounded-xl bg-white text-black text-[13px] font-[900] hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2 disabled:opacity-70 disabled:hover:scale-100 disabled:cursor-not-allowed"
           >
-            Create Profile
+            {isLoading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Creating Profile...
+              </>
+            ) : (
+              "Create Profile"
+            )}
           </button>
         </div>
       </motion.div>
