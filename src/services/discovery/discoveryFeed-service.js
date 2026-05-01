@@ -1,5 +1,5 @@
 import api from "../../api/axiosInstance";
-import { GET_USER_FEED } from "../../constants";
+import { GET_USER_FEED, RECORD_SWIPE } from "../../constants";
 
 
 export const getUserFeed = async (userId) => {
@@ -7,3 +7,7 @@ export const getUserFeed = async (userId) => {
         params: { userId }
       });
 };
+
+export const recordSwipe = async(data)=> {
+    return await api.post(RECORD_SWIPE, data);
+}

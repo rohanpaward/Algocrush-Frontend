@@ -3,7 +3,7 @@ import { motion, useMotionValue, useTransform, useAnimation, AnimatePresence } f
 import { ShieldCheck, ChevronUp, ChevronDown, Globe, ExternalLink } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { getUserFeed } from "../../services/discovery/discoveryFeed-service";
+import { getUserFeed, recordSwipe } from "../../services/discovery/discoveryFeed-service";
 
 
 // --- MOCK DATA (Rahul & Priya) ---
@@ -75,12 +75,10 @@ const IntentPill = ({ intent }) => {
 };
 
 // --- PROFILE CARD COMPONENT ---
-const ProfileCard = ({ profile, index, setCards, cards, isTop }) => {
-    console.log(profile,'this is profile inside profilecard func')
+const ProfileCard = ({ profile, index, setCards, cards, isTop, userId  }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const x = useMotionValue(0);
   const controls = useAnimation();
-
 
   // Animation Transforms
   const rotate = useTransform(x, [-200, 200], [-8, 8]);
@@ -104,8 +102,31 @@ const ProfileCard = ({ profile, index, setCards, cards, isTop }) => {
 
   const handleAction = async (direction) => {
     const moveX = direction === 'like' ? 500 : -500;
+  
+    // 1️⃣ Start API call (DON'T await)
+    recordSwipe({
+      swiper_id: userId,
+      swiped_id: profile.id,
+      direction
+    })
+      .then((res) => {
+        console.log("API success:", res);
+  
+        // 👉 later: handle match here
+        if (res?.data?.matched) {
+          console.log("MATCH 🎉");
+        }
+      })
+      .catch((err) => {
+        console.error("Swipe API failed:", err);
+        // optional: retry / log
+      });
+  
+    // 2️⃣ Animate immediately (no waiting)
     await controls.start({ x: moveX, transition: { duration: 0.4 } });
-    setCards(cards.filter(c => c.id !== profile.id));
+  
+    // 3️⃣ Remove card instantly
+    setCards(prev => prev.filter(c => c.id !== profile.id));
   };
 
   return (
@@ -291,6 +312,7 @@ const capitalize = (str) =>
 // --- MAIN FEED CONTAINER ---
 export const DiscoveryFeed = () => {
     const { user } = useSelector((state) => state.auth);
+    const userId = user?.id
   
     const [cards, setCards] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -305,8 +327,6 @@ export const DiscoveryFeed = () => {
           setError(null);
   
           const res = await getUserFeed(user.id);
-          console.log("API RESPONSE:", res);
-
           const apiData = res?.data?.data || res?.data || [];
 
           if (!Array.isArray(apiData)) {
@@ -340,9 +360,6 @@ export const DiscoveryFeed = () => {
   
       fetchFeed();
     }, [user?.id]);
-
-
-    console.log(cards,'this si the cards')
   
     return (
       <div className="h-[100dvh] w-full bg-[#0a0a0a] flex items-center justify-center overflow-hidden font-sans pb-[80px]">
@@ -372,6 +389,7 @@ export const DiscoveryFeed = () => {
                 cards={cards}
                 setCards={setCards}
                 isTop={index === 0}
+                userId={userId}
               />
             ))
           }

@@ -12,3 +12,4 @@ export  const REGISTER_USER = `${BASEAPI}/register-user`
 export const AUTH_ME = `${BASEAPI}/auth/me`
 export const UPDATE_USER = '/update-user'
 export const GET_USER_FEED ='/discovery/user-feed'
+export const RECORD_SWIPE = '/discovery/swipe-user'
