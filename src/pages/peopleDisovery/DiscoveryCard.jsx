@@ -4,6 +4,7 @@ import { ShieldCheck, ChevronUp, ChevronDown, Globe, ExternalLink } from "lucide
 import { FaGithub } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { getUserFeed, recordSwipe } from "../../services/discovery/discoveryFeed-service";
+import { MatchOverlay } from "./MatchOverlay";
 
 
 // --- MOCK DATA (Rahul & Priya) ---
@@ -75,7 +76,7 @@ const IntentPill = ({ intent }) => {
 };
 
 // --- PROFILE CARD COMPONENT ---
-const ProfileCard = ({ profile, index, setCards, cards, isTop, userId  }) => {
+const ProfileCard = ({ profile, index, setCards, cards, isTop, userId, onMatch  }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const x = useMotionValue(0);
   const controls = useAnimation();
@@ -86,6 +87,7 @@ const ProfileCard = ({ profile, index, setCards, cards, isTop, userId  }) => {
   const passOpacity = useTransform(x, [-20, -100], [0, 1]);
   const glowRight = useTransform(x, [0, 100], ["rgba(34,197,94,0)", "rgba(34,197,94,0.15)"]);
   const glowLeft = useTransform(x, [0, -100], ["rgba(239,68,68,0)", "rgba(239,68,68,0.15)"]);
+
 
   const handleDragEnd = async (e, info) => {
     const threshold = 100;
@@ -103,29 +105,22 @@ const ProfileCard = ({ profile, index, setCards, cards, isTop, userId  }) => {
   const handleAction = async (direction) => {
     const moveX = direction === 'like' ? 500 : -500;
   
-    // 1️⃣ Start API call (DON'T await)
     recordSwipe({
       swiper_id: userId,
       swiped_id: profile.id,
       direction
     })
       .then((res) => {
-        console.log("API success:", res);
-  
-        // 👉 later: handle match here
         if (res?.data?.matched) {
           console.log("MATCH 🎉");
+          if (onMatch) onMatch(profile); // 3. Trigger the overlay
         }
       })
       .catch((err) => {
         console.error("Swipe API failed:", err);
-        // optional: retry / log
       });
   
-    // 2️⃣ Animate immediately (no waiting)
     await controls.start({ x: moveX, transition: { duration: 0.4 } });
-  
-    // 3️⃣ Remove card instantly
     setCards(prev => prev.filter(c => c.id !== profile.id));
   };
 
@@ -317,6 +312,7 @@ export const DiscoveryFeed = () => {
     const [cards, setCards] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+  const [matchedProfile, setMatchedProfile] = useState(null);
   
     useEffect(() => {
       if (!user?.id) return;
@@ -363,7 +359,15 @@ export const DiscoveryFeed = () => {
   
     return (
       <div className="h-[100dvh] w-full bg-[#0a0a0a] flex items-center justify-center overflow-hidden font-sans pb-[80px]">
-        
+        <AnimatePresence>
+          {matchedProfile && (
+            <MatchOverlay 
+              currentUser={user} // Passed from Redux
+              matchedProfile={matchedProfile} 
+              onClose={() => setMatchedProfile(null)} 
+            />
+          )}
+        </AnimatePresence>
         <div className="relative w-full max-w-[380px] h-[calc(100%-40px)] mx-4 flex items-center justify-center">
   
           {/* ✅ Loading */}
@@ -390,6 +394,7 @@ export const DiscoveryFeed = () => {
                 setCards={setCards}
                 isTop={index === 0}
                 userId={userId}
+                onMatch={setMatchedProfile} 
               />
             ))
           }
