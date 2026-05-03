@@ -7,44 +7,6 @@ import { getUserFeed, recordSwipe } from "../../services/discovery/discoveryFeed
 import { MatchOverlay } from "./MatchOverlay";
 
 
-// --- MOCK DATA (Rahul & Priya) ---
-// const PROFILES = [
-//   {
-//     id: 1,
-//     name: "Rahul Krishnan",
-//     role: "Full-stack • PM",
-//     college: "BITS Pilani • 3rd year • CS",
-//     status: "Active",
-//     vibe: "Voice memo it and sleep — if it's good it'll survive morning",
-//     projectName: "AI scheduling tool for college clubs",
-//     projectDesc: "Looking for a designer before demo day.",
-//     githubUrl: "#",
-//     liveUrl: "#",
-//     canBuild: ["Web apps", "APIs & backends", "UI design", "AI integrations"],
-//     intent: "Cofounder",
-//     challenge: "Matching algo kept failing. Realised the problem wasn't the code — it was garbage input data.",
-//     solution: "Rebuilt the onboarding from scratch.",
-//     color: "from-purple-500 to-blue-500"
-//   },
-//   {
-//     id: 2,
-//     name: "Priya Sharma",
-//     role: "Designer • No-code",
-//     college: "NID Ahmedabad • 2nd year • UX Design",
-//     status: "Selective",
-//     vibe: "Make a rough Figma sketch right then — can't sleep till it's out of my head",
-//     projectName: "Campus Event App",
-//     projectDesc: "Nothing specific right now — open to ideas",
-//     githubUrl: "#",
-//     liveUrl: "#",
-//     canBuild: ["Product design", "Prototypes", "No-code apps", "Brand & visual"],
-//     intent: "Build partner",
-//     challenge: "Spent a week on a design no one understood. Did 5 user interviews in 2 days.",
-//     solution: "Scrapped everything and rebuilt in 3 hours.",
-//     color: "from-emerald-400 to-teal-500"
-//   }
-// ];
-
 // --- HELPER COMPONENTS ---
 const StatusPill = ({ status }) => {
   const styles = {
@@ -112,7 +74,6 @@ const ProfileCard = ({ profile, index, setCards, cards, isTop, userId, onMatch  
     })
       .then((res) => {
         if (res?.data?.matched) {
-          console.log("MATCH 🎉");
           if (onMatch) onMatch(profile); // 3. Trigger the overlay
         }
       })
@@ -370,20 +331,20 @@ export const DiscoveryFeed = () => {
         </AnimatePresence>
         <div className="relative w-full max-w-[380px] h-[calc(100%-40px)] mx-4 flex items-center justify-center">
   
-          {/* ✅ Loading */}
+          {/*  Loading */}
           {loading && <div className="text-white">Loading...</div>}
   
-          {/* ✅ Error */}
+          {/* Error */}
           {error && <div className="text-red-500">{error}</div>}
   
-          {/* ✅ Empty */}
+          {/*  Empty */}
           {!loading && !error && cards.length === 0 && (
             <div className="text-slate-500 text-sm font-medium">
               No more builders in your area.
             </div>
           )}
   
-          {/* ✅ Data */}
+          {/*  Data */}
           {!loading && !error &&
             [...cards].reverse().map((profile, index) => (
               <ProfileCard

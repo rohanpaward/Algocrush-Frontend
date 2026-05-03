@@ -17,7 +17,7 @@ export const MatchOverlay = ({ currentUser, matchedProfile, onClose }) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
       onClick={onClose} // Tap anywhere on the screen to close
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0a0a]/90 backdrop-blur-md cursor-pointer"
+      className="fixed inset-0 z-[500] flex flex-col items-center justify-center bg-[#0a0a0a]/90 backdrop-blur-md cursor-pointer"
     >
       {/* --- THE TEXT REVEAL --- */}
       <motion.div
@@ -37,7 +37,7 @@ export const MatchOverlay = ({ currentUser, matchedProfile, onClose }) => {
         {/* Current User Avatar (Flies in from Left) */}
         <motion.div
           initial={{ x: -200, opacity: 0, rotate: -20 }}
-          animate={{ x: -20, opacity: 1, rotate: -5 }}
+          animate={{ x: -40, opacity: 1, rotate: -5 }}
           transition={{ type: "spring", damping: 15, stiffness: 150, delay: 0.1 }}
           className="absolute z-20"
         >
@@ -45,7 +45,7 @@ export const MatchOverlay = ({ currentUser, matchedProfile, onClose }) => {
              {currentUser?.avatar ? (
                 <img src={currentUser.avatar} alt="You" className="w-full h-full object-cover" />
              ) : (
-                <span className="text-4xl font-black text-white">{currentUser?.name?.charAt(0) || "U"}</span>
+                <span className="text-4xl font-black text-white">{currentUser?.username?.charAt(0) || "U"}</span>
              )}
           </div>
         </motion.div>
@@ -53,7 +53,7 @@ export const MatchOverlay = ({ currentUser, matchedProfile, onClose }) => {
         {/* Matched Profile Avatar (Flies in from Right) */}
         <motion.div
           initial={{ x: 200, opacity: 0, rotate: 20 }}
-          animate={{ x: 20, opacity: 1, rotate: 5 }}
+          animate={{ x: 40, opacity: 1, rotate: 5 }}
           transition={{ type: "spring", damping: 15, stiffness: 150, delay: 0.1 }}
           className="absolute z-10"
         >
@@ -61,7 +61,7 @@ export const MatchOverlay = ({ currentUser, matchedProfile, onClose }) => {
              {matchedProfile?.avatar ? (
                 <img src={matchedProfile.avatar} alt="Match" className="w-full h-full object-cover" />
              ) : (
-                <span className="text-4xl font-black text-white">{matchedProfile?.name?.charAt(0) || "M"}</span>
+                <span className="text-4xl font-black text-white">{matchedProfile?.username?.charAt(0) || "M"}</span>
              )}
           </div>
         </motion.div>
