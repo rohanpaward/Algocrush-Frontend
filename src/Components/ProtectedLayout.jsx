@@ -13,6 +13,7 @@ const ProtectedLayout = () => {
     const path = location.pathname;
     if (path.includes("/home")) return "feed";
     if (path.includes("/profile")) return "profile";
+    if(path.includes("/chat")) return "messages"
     return "feed";
   };
 
@@ -22,11 +23,10 @@ const ProtectedLayout = () => {
   const handleTabChange = (tabId) => {
     if (tabId === "profile") navigate("/profile");
     if (tabId === "feed") navigate("/people/discovery");
+    if(tabId === "messages") navigate("/chat");
   };
 
-  // =====================
-  // 🔥 AUTH GUARD
-  // =====================
+  // AUTH GUARD
 
   if (loading) {
     return (

@@ -13,3 +13,4 @@ export const AUTH_ME = `${BASEAPI}/auth/me`
 export const UPDATE_USER = '/update-user'
 export const GET_USER_FEED ='/discovery/user-feed'
 export const RECORD_SWIPE = '/discovery/swipe-user'
+export const GET_CHAT_LIST = '/chat/get-all-chats'

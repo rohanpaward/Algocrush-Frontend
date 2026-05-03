@@ -9,6 +9,8 @@ import Onboarding from "./pages/onboarding/Onboarding";
 import { ProfileDashboard } from "./pages/profile/ProfileDashboard";
 import { EditProfile } from "./pages/profile/EditProfile";
 import DiscoveryFeed from "./pages/peopleDisovery/DiscoveryCard";
+import CollabChat from "./pages/Chat/CollabChat";
+import { InboxList } from "./pages/Chat/InboxList";
 
 
 function App() {
@@ -25,6 +27,7 @@ function App() {
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/profile" element={ <ProfileDashboard/>} />
       <Route path='/profile/edit' element={<EditProfile/>}/>
+      <Route path='/chat' element={<InboxList/> }/>
     </Route>
   </Routes>
   );
