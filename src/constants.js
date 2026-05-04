@@ -1,5 +1,8 @@
 // export const BASEAPI = 'http://localhost:3001/api/v1/algocrush'
+// export const SOCKET_API ='http://localhost:3001'
+/////------------deployed version ----------
 export const BASEAPI ='https://algocrush-node.onrender.com/api/v1/algocrush'
+export const SOCKET_API ='https://algocrush-node.onrender.com'
 
 
 // Onboarding module 
@@ -14,3 +17,4 @@ export const UPDATE_USER = '/update-user'
 export const GET_USER_FEED ='/discovery/user-feed'
 export const RECORD_SWIPE = '/discovery/swipe-user'
 export const GET_CHAT_LIST = '/chat/get-all-chats'
+export const GET_CONVO_BY_ID = '/chat/get-convo-by-id'
